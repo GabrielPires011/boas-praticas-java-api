@@ -5,7 +5,6 @@ import br.com.alura.adopet.api.model.Adocao;
 
 import br.com.alura.adopet.api.service.AdocaoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/adocoes")
 public class AdocaoController {
 
-    @Autowired
-    private AdocaoService adocaoService;
+    private final AdocaoService adocaoService;
+
+    public AdocaoController(AdocaoService adocaoService) {
+        this.adocaoService = adocaoService;
+    }
 
     @PostMapping
     public ResponseEntity<String> solicitar(@RequestBody @Valid Adocao adocao) {
