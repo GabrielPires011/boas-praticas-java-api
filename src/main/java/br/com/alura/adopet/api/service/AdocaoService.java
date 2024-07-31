@@ -18,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static br.com.alura.adopet.api.util.Util.isEmpty;
-import static br.com.alura.adopet.api.util.Util.isNotEmpty;
+import static br.com.alura.adopet.api.util.Util.*;
 
 @Service
 public class AdocaoService {
@@ -68,7 +67,7 @@ public class AdocaoService {
         var adocao = repository.findById(aprovacaoAdocaoDto.idAdocao()).orElse(null);
 
         if (isEmpty(adocao)) throw new ValidacaoException("Adoção não existe!");
-        if (adocao.getStatus().equals(StatusAdocao.APROVADO))
+        if (isEquals(adocao.getStatus(), StatusAdocao.APROVADO))
             throw new ValidacaoException("A adoção já está aprovada!");
 
         adocao.setStatus(StatusAdocao.APROVADO);
@@ -87,7 +86,7 @@ public class AdocaoService {
         var adocao = repository.findById(reprovacaoAdocaoDto.idAdocao()).orElse(null);
 
         if (isEmpty(adocao)) throw new ValidacaoException("Adoção não existe!");
-        if (adocao.getStatus().equals(StatusAdocao.REPROVADO))
+        if (isEquals(adocao.getStatus(), StatusAdocao.REPROVADO))
             throw new ValidacaoException("A adoção já está reprovada!");
 
         adocao.setStatus(StatusAdocao.REPROVADO);
@@ -102,18 +101,18 @@ public class AdocaoService {
     }
 
     private String verificarSolicitacao(Pet pet, Tutor tutor) {
-        if (pet.getAdotado()) throw new ValidacaoException("Pet já foi adotado!");
+        if (isTrue(pet.getAdotado())) throw new ValidacaoException("Pet já foi adotado!");
 
         var adocoes = repository.findAll();
 
         var contador = 0;
         for (Adocao a : adocoes) {
-            if (a.getTutor().equals(tutor) && a.getStatus().equals(StatusAdocao.AGUARDANDO_AVALIACAO))
+            if (isEquals(a.getTutor(), tutor) && isEquals(a.getStatus(), StatusAdocao.AGUARDANDO_AVALIACAO))
                 return "Tutor já possui outra adoção aguardando avaliação!";
-            if (a.getPet().equals(pet) && a.getStatus().equals(StatusAdocao.AGUARDANDO_AVALIACAO))
+            if (isEquals(a.getPet(), (pet)) && isEquals(a.getStatus(), (StatusAdocao.AGUARDANDO_AVALIACAO)))
                 return "Pet já está aguardando avaliação para ser adotado!";
-            if (a.getTutor().equals(tutor) && a.getStatus().equals(StatusAdocao.APROVADO)) contador += 1;
-            if (contador == 5)
+            if (isEquals(a.getTutor(), (tutor)) && isEquals(a.getStatus(), StatusAdocao.APROVADO)) contador += 1;
+            if (isEquals(contador, 5))
                 return "Tutor chegou ao limite máximo de 5 adoções!";
         }
 

@@ -30,13 +30,21 @@ public class AdocaoController {
 
     @PutMapping("/aprovar")
     public ResponseEntity<String> aprovar(@RequestBody @Valid AprovacaoAdocaoDto aprovacaoAdocaoDto) {
-        adocaoService.aprovar(aprovacaoAdocaoDto);
-        return ResponseEntity.ok().body("Solicitado com sucesso!");
+        try {
+            adocaoService.aprovar(aprovacaoAdocaoDto);
+            return ResponseEntity.ok().body("Solicitado com sucesso!");
+        } catch (ValidacaoException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/reprovar")
     public ResponseEntity<String> reprovar(@RequestBody @Valid ReprovacaoAdocaoDto reprovacaoAdocaoDto) {
-        adocaoService.reprovar(reprovacaoAdocaoDto);
-        return ResponseEntity.ok().body("Solicitado com sucesso!");
+        try {
+            adocaoService.reprovar(reprovacaoAdocaoDto);
+            return ResponseEntity.ok().body("Solicitado com sucesso!");
+        } catch (ValidacaoException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
