@@ -2,21 +2,21 @@ package br.com.alura.adopet.api.service;
 
 import br.com.alura.adopet.api.dto.adocao.AprovacaoAdocaoDto;
 import br.com.alura.adopet.api.dto.adocao.ReprovacaoAdocaoDto;
-import br.com.alura.adopet.api.dto.adocao.SolictacaoAdocaoDto;
+import br.com.alura.adopet.api.dto.adocao.SolicitacaoAdocaoDto;
 import br.com.alura.adopet.api.exception.ValidacaoException;
 import br.com.alura.adopet.api.model.Adocao;
-import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.model.StatusAdocao;
-import br.com.alura.adopet.api.model.Tutor;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import br.com.alura.adopet.api.repository.PetRepository;
 import br.com.alura.adopet.api.repository.TutorRepository;
+import br.com.alura.adopet.api.validacoes.ValidacaoSolicitacaoAdocao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static br.com.alura.adopet.api.util.Util.*;
 
@@ -35,21 +35,18 @@ public class AdocaoService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private List<ValidacaoSolicitacaoAdocao> validacoes;
+
     @Transactional
-    public void solicitar(SolictacaoAdocaoDto solictacaoAdocaoDto) {
+    public void solicitar(SolicitacaoAdocaoDto solicitacaoAdocaoDto) {
+        var tutor = tutorRepository.getReferenceById(solicitacaoAdocaoDto.idTutor());
+        var pet = petRepository.getReferenceById(solicitacaoAdocaoDto.idPet());
 
-        var tutor = tutorRepository.findById(solictacaoAdocaoDto.idTutor()).orElse(null);
-        if (isEmpty(tutor)) throw new ValidacaoException("Tutor não existe!");
-
-        var pet = petRepository.findById(solictacaoAdocaoDto.idPet()).orElse(null);
-        if (isEmpty(pet)) throw new ValidacaoException("Pet não existe!");
-
-        var erro = verificarSolicitacao(pet, tutor);
-
-        if (isNotEmpty(erro)) throw new ValidacaoException(erro);
+        validacoes.forEach(v -> v.validar(solicitacaoAdocaoDto));
 
         var adocao = new Adocao();
-        adocao.setMotivo(solictacaoAdocaoDto.motivo());
+        adocao.setMotivo(solicitacaoAdocaoDto.motivo());
         adocao.setPet(pet);
         adocao.setTutor(tutor);
         adocao.setData(LocalDateTime.now());
@@ -64,9 +61,8 @@ public class AdocaoService {
 
     @Transactional
     public void aprovar(AprovacaoAdocaoDto aprovacaoAdocaoDto) {
-        var adocao = repository.findById(aprovacaoAdocaoDto.idAdocao()).orElse(null);
+        var adocao = repository.getReferenceById(aprovacaoAdocaoDto.idAdocao());
 
-        if (isEmpty(adocao)) throw new ValidacaoException("Adoção não existe!");
         if (isEquals(adocao.getStatus(), StatusAdocao.APROVADO))
             throw new ValidacaoException("A adoção já está aprovada!");
 
@@ -83,9 +79,8 @@ public class AdocaoService {
 
     @Transactional
     public void reprovar(ReprovacaoAdocaoDto reprovacaoAdocaoDto) {
-        var adocao = repository.findById(reprovacaoAdocaoDto.idAdocao()).orElse(null);
+        var adocao = repository.getReferenceById(reprovacaoAdocaoDto.idAdocao());
 
-        if (isEmpty(adocao)) throw new ValidacaoException("Adoção não existe!");
         if (isEquals(adocao.getStatus(), StatusAdocao.REPROVADO) &&
                 isEquals(adocao.getJustificativaStatus(), reprovacaoAdocaoDto.justificativa()))
             throw new ValidacaoException("A adoção já está reprovada!");
@@ -100,24 +95,5 @@ public class AdocaoService {
                         adocao.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) +
                         ", foi reprovada pelo abrigo " + adocao.getPet().getAbrigo().getNome() +
                         " com a seguinte justificativa: " + adocao.getJustificativaStatus());
-    }
-
-    private String verificarSolicitacao(Pet pet, Tutor tutor) {
-        if (isTrue(pet.getAdotado())) throw new ValidacaoException("Pet já foi adotado!");
-
-        var adocoes = repository.findAll();
-
-        var contador = 0;
-        for (Adocao a : adocoes) {
-            if (isEquals(a.getTutor(), tutor) && isEquals(a.getStatus(), StatusAdocao.AGUARDANDO_AVALIACAO))
-                return "Tutor já possui outra adoção aguardando avaliação!";
-            if (isEquals(a.getPet(), (pet)) && isEquals(a.getStatus(), (StatusAdocao.AGUARDANDO_AVALIACAO)))
-                return "Pet já está aguardando avaliação para ser adotado!";
-            if (isEquals(a.getTutor(), (tutor)) && isEquals(a.getStatus(), StatusAdocao.APROVADO)) contador += 1;
-            if (isEquals(contador, 5))
-                return "Tutor chegou ao limite máximo de 5 adoções!";
-        }
-
-        return null;
     }
 }
