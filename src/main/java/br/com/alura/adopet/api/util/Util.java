@@ -1,9 +1,6 @@
 package br.com.alura.adopet.api.util;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Util {
 
@@ -72,7 +69,33 @@ public class Util {
         }
 
         if (obj1.getClass().isArray() && obj2.getClass().isArray()) {
-            return Arrays.deepEquals((Object[]) obj1, (Object[]) obj2);
+            if (obj1 instanceof Object[] && obj2 instanceof Object[]) {
+                return Arrays.deepEquals((Object[]) obj1, (Object[]) obj2);
+            }
+            if (obj1 instanceof int[] && obj2 instanceof int[]) {
+                return Arrays.equals((int[]) obj1, (int[]) obj2);
+            }
+            if (obj1 instanceof long[] && obj2 instanceof long[]) {
+                return Arrays.equals((long[]) obj1, (long[]) obj2);
+            }
+            if (obj1 instanceof short[] && obj2 instanceof short[]) {
+                return Arrays.equals((short[]) obj1, (short[]) obj2);
+            }
+            if (obj1 instanceof byte[] && obj2 instanceof byte[]) {
+                return Arrays.equals((byte[]) obj1, (byte[]) obj2);
+            }
+            if (obj1 instanceof double[] && obj2 instanceof double[]) {
+                return Arrays.equals((double[]) obj1, (double[]) obj2);
+            }
+            if (obj1 instanceof float[] && obj2 instanceof float[]) {
+                return Arrays.equals((float[]) obj1, (float[]) obj2);
+            }
+            if (obj1 instanceof char[] && obj2 instanceof char[]) {
+                return Arrays.equals((char[]) obj1, (char[]) obj2);
+            }
+            if (obj1 instanceof boolean[] && obj2 instanceof boolean[]) {
+                return Arrays.equals((boolean[]) obj1, (boolean[]) obj2);
+            }
         }
 
         return obj1.equals(obj2);
