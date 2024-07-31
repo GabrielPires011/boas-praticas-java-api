@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.*;
 public class AdocaoController {
 
     @Autowired
-    private AdocaoService adocaoService;
+    private AdocaoService service;
 
     @PostMapping
-    public ResponseEntity<String> solicitar(@RequestBody @Valid SolicitacaoAdocaoDto solicitacaoAdocaoDto) {
+    public ResponseEntity<String> solicitar(@RequestBody @Valid SolicitacaoAdocaoDto dto) {
         try {
-            adocaoService.solicitar(solicitacaoAdocaoDto);
+            service.solicitar(dto);
             return ResponseEntity.ok().body("Solicitado com sucesso!");
         } catch (ValidacaoException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -29,9 +29,9 @@ public class AdocaoController {
     }
 
     @PutMapping("/aprovar")
-    public ResponseEntity<String> aprovar(@RequestBody @Valid AprovacaoAdocaoDto aprovacaoAdocaoDto) {
+    public ResponseEntity<String> aprovar(@RequestBody @Valid AprovacaoAdocaoDto dto) {
         try {
-            adocaoService.aprovar(aprovacaoAdocaoDto);
+            service.aprovar(dto);
             return ResponseEntity.ok().body("Solicitado com sucesso!");
         } catch (ValidacaoException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -39,9 +39,9 @@ public class AdocaoController {
     }
 
     @PutMapping("/reprovar")
-    public ResponseEntity<String> reprovar(@RequestBody @Valid ReprovacaoAdocaoDto reprovacaoAdocaoDto) {
+    public ResponseEntity<String> reprovar(@RequestBody @Valid ReprovacaoAdocaoDto dto) {
         try {
-            adocaoService.reprovar(reprovacaoAdocaoDto);
+            service.reprovar(dto);
             return ResponseEntity.ok().body("Solicitado com sucesso!");
         } catch (ValidacaoException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

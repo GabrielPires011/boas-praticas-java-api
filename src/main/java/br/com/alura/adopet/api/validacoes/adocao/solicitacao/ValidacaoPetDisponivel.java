@@ -12,8 +12,8 @@ public class ValidacaoPetDisponivel implements ValidacaoSolicitacaoAdocao {
     @Autowired
     PetRepository petRepository;
     
-    public void validar(SolicitacaoAdocaoDto solicitacaoAdocaoDto) {
-        if (petRepository.existsByIdAndAdotado(solicitacaoAdocaoDto.idPet(), true))
+    public void validar(SolicitacaoAdocaoDto dto) {
+        if (petRepository.existsByIdAndAdotado(dto.idPet(), true))
             throw new ValidacaoException("Pet já foi adotado!");
     }
 }

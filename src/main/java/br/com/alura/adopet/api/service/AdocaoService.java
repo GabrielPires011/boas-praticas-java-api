@@ -38,13 +38,13 @@ public class AdocaoService {
     private List<ValidacaoSolicitacaoAdocao> validacoes;
 
     @Transactional
-    public void solicitar(SolicitacaoAdocaoDto solicitacaoAdocaoDto) {
-        var tutor = tutorRepository.getReferenceById(solicitacaoAdocaoDto.idTutor());
-        var pet = petRepository.getReferenceById(solicitacaoAdocaoDto.idPet());
+    public void solicitar(SolicitacaoAdocaoDto dto) {
+        var tutor = tutorRepository.getReferenceById(dto.idTutor());
+        var pet = petRepository.getReferenceById(dto.idPet());
 
-        validacoes.forEach(v -> v.validar(solicitacaoAdocaoDto));
+        validacoes.forEach(v -> v.validar(dto));
 
-        var adocao = new Adocao(tutor, pet, solicitacaoAdocaoDto.motivo());
+        var adocao = new Adocao(tutor, pet, dto.motivo());
 
         repository.save(adocao);
 
@@ -55,8 +55,8 @@ public class AdocaoService {
     }
 
     @Transactional
-    public void aprovar(AprovacaoAdocaoDto aprovacaoAdocaoDto) {
-        var adocao = repository.getReferenceById(aprovacaoAdocaoDto.idAdocao());
+    public void aprovar(AprovacaoAdocaoDto dto) {
+        var adocao = repository.getReferenceById(dto.idAdocao());
 
         if (isEquals(adocao.getStatus(), StatusAdocao.APROVADO))
             throw new ValidacaoException("A adoção já está aprovada!");
@@ -73,14 +73,14 @@ public class AdocaoService {
     }
 
     @Transactional
-    public void reprovar(ReprovacaoAdocaoDto reprovacaoAdocaoDto) {
-        var adocao = repository.getReferenceById(reprovacaoAdocaoDto.idAdocao());
+    public void reprovar(ReprovacaoAdocaoDto dto) {
+        var adocao = repository.getReferenceById(dto.idAdocao());
 
         if (isEquals(adocao.getStatus(), StatusAdocao.REPROVADO) &&
-                isEquals(adocao.getJustificativaStatus(), reprovacaoAdocaoDto.justificativa()))
+                isEquals(adocao.getJustificativaStatus(), dto.justificativa()))
             throw new ValidacaoException("A adoção já está reprovada!");
 
-        adocao.marcaComoReprovado(reprovacaoAdocaoDto.justificativa());
+        adocao.marcaComoReprovado(dto.justificativa());
         repository.save(adocao);
 
         emailService.sendEmail("adopet@email.com.br", adocao.getTutor().getEmail(),

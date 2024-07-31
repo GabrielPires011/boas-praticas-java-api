@@ -13,8 +13,8 @@ public class ValidacaoTutorComAdocaoEmAndamento implements ValidacaoSolicitacaoA
     @Autowired
     private AdocaoRepository adocaoRepository;
 
-    public void validar(SolicitacaoAdocaoDto solicitacaoAdocaoDto) {
-        if (adocaoRepository.existsByTutorIdAndStatus(solicitacaoAdocaoDto.idTutor(), StatusAdocao.AGUARDANDO_AVALIACAO))
+    public void validar(SolicitacaoAdocaoDto dto) {
+        if (adocaoRepository.existsByTutorIdAndStatus(dto.idTutor(), StatusAdocao.AGUARDANDO_AVALIACAO))
             throw new ValidacaoException("Tutor já possui outra adoção aguardando avaliação!");
     }
 }
