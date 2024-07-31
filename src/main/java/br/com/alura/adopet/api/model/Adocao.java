@@ -15,10 +15,10 @@ public class Adocao {
 
     private LocalDateTime data;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Tutor tutor;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private Pet pet;
 
     private String motivo;

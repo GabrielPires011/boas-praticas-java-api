@@ -100,4 +100,17 @@ public class Util {
 
         return obj1.equals(obj2);
     }
+
+    public static boolean isParsableLong(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        try {
+            Long.parseLong(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }

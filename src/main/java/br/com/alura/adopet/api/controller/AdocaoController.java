@@ -32,7 +32,7 @@ public class AdocaoController {
     public ResponseEntity<String> aprovar(@RequestBody @Valid AprovacaoAdocaoDto dto) {
         try {
             service.aprovar(dto);
-            return ResponseEntity.ok().body("Solicitado com sucesso!");
+            return ResponseEntity.ok().body("Aprovado com sucesso!");
         } catch (ValidacaoException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -42,7 +42,7 @@ public class AdocaoController {
     public ResponseEntity<String> reprovar(@RequestBody @Valid ReprovacaoAdocaoDto dto) {
         try {
             service.reprovar(dto);
-            return ResponseEntity.ok().body("Solicitado com sucesso!");
+            return ResponseEntity.ok().body("Reprovado com sucesso!");
         } catch (ValidacaoException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
