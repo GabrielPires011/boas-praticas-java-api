@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -45,12 +44,8 @@ public class AdocaoService {
 
         validacoes.forEach(v -> v.validar(solicitacaoAdocaoDto));
 
-        var adocao = new Adocao();
-        adocao.setMotivo(solicitacaoAdocaoDto.motivo());
-        adocao.setPet(pet);
-        adocao.setTutor(tutor);
-        adocao.setData(LocalDateTime.now());
-        adocao.setStatus(StatusAdocao.AGUARDANDO_AVALIACAO);
+        var adocao = new Adocao(tutor, pet, solicitacaoAdocaoDto.motivo());
+
         repository.save(adocao);
 
         emailService.sendEmail("adopet@email.com.br", adocao.getPet().getAbrigo().getEmail(),
@@ -66,7 +61,7 @@ public class AdocaoService {
         if (isEquals(adocao.getStatus(), StatusAdocao.APROVADO))
             throw new ValidacaoException("A adoção já está aprovada!");
 
-        adocao.setStatus(StatusAdocao.APROVADO);
+        adocao.marcaComoAprovado();
         repository.save(adocao);
 
         emailService.sendEmail("adopet@email.com.br", adocao.getTutor().getEmail(),
@@ -85,8 +80,7 @@ public class AdocaoService {
                 isEquals(adocao.getJustificativaStatus(), reprovacaoAdocaoDto.justificativa()))
             throw new ValidacaoException("A adoção já está reprovada!");
 
-        adocao.setStatus(StatusAdocao.REPROVADO);
-        adocao.setJustificativaStatus(reprovacaoAdocaoDto.justificativa());
+        adocao.marcaComoReprovado(reprovacaoAdocaoDto.justificativa());
         repository.save(adocao);
 
         emailService.sendEmail("adopet@email.com.br", adocao.getTutor().getEmail(),
