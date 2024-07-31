@@ -18,6 +18,7 @@ import static br.com.alura.adopet.api.util.Util.isParsableLong;
 
 @Service
 public class AbrigoService {
+
     @Autowired
     private AbrigoRepository repository;
 

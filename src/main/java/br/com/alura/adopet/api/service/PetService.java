@@ -13,6 +13,7 @@ import static br.com.alura.adopet.api.util.Util.isFalse;
 
 @Service
 public class PetService {
+
     @Autowired
     private PetRepository repository;
 

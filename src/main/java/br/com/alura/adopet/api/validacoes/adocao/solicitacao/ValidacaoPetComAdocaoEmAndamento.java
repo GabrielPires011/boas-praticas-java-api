@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ValidacaoPetComAdocaoEmAndamento implements ValidacaoSolicitacaoAdocao {
+
     @Autowired
     private AdocaoRepository adocaoRepository;
 
