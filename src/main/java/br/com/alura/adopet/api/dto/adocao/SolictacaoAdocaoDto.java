@@ -1,4 +1,9 @@
 package br.com.alura.adopet.api.dto.adocao;
 
-public record SolictacaoAdocaoDto(Long idPet, Long idTutor, String motivo) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record SolictacaoAdocaoDto(@NotNull Long idPet,
+                                  @NotNull Long idTutor,
+                                  @NotBlank String motivo) {
 }

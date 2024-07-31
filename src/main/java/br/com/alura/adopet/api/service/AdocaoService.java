@@ -86,10 +86,12 @@ public class AdocaoService {
         var adocao = repository.findById(reprovacaoAdocaoDto.idAdocao()).orElse(null);
 
         if (isEmpty(adocao)) throw new ValidacaoException("Adoção não existe!");
-        if (isEquals(adocao.getStatus(), StatusAdocao.REPROVADO))
+        if (isEquals(adocao.getStatus(), StatusAdocao.REPROVADO) &&
+                isEquals(adocao.getJustificativaStatus(), reprovacaoAdocaoDto.justificativa()))
             throw new ValidacaoException("A adoção já está reprovada!");
 
         adocao.setStatus(StatusAdocao.REPROVADO);
+        adocao.setJustificativaStatus(reprovacaoAdocaoDto.justificativa());
         repository.save(adocao);
 
         emailService.sendEmail("adopet@email.com.br", adocao.getTutor().getEmail(),
