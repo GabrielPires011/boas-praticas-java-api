@@ -1,8 +1,9 @@
 package br.com.alura.adopet.api.service;
 
-import br.com.alura.adopet.api.dto.abrigo.AbrigoDto;
+import br.com.alura.adopet.api.dto.abrigo.CadastroAbrigoDto;
+import br.com.alura.adopet.api.dto.abrigo.DadosDetalhadosAbrigoDto;
 import br.com.alura.adopet.api.dto.pet.DadosDetalhesPetDto;
-import br.com.alura.adopet.api.dto.pet.PetDto;
+import br.com.alura.adopet.api.dto.pet.CadastroPetDto;
 import br.com.alura.adopet.api.exception.ValidacaoException;
 import br.com.alura.adopet.api.model.Abrigo;
 import br.com.alura.adopet.api.model.Pet;
@@ -23,24 +24,24 @@ public class AbrigoService {
     private AbrigoRepository repository;
 
 
-    public List<AbrigoDto> listar() {
+    public List<DadosDetalhadosAbrigoDto> listar() {
         var abrigos = repository.findAll();
 
-        var abrigosDto = new ArrayList<AbrigoDto>();
-        abrigos.forEach(abrigo -> abrigosDto.add(new AbrigoDto(abrigo)));
+        var abrigosDto = new ArrayList<DadosDetalhadosAbrigoDto>();
+        abrigos.forEach(abrigo -> abrigosDto.add(new DadosDetalhadosAbrigoDto(abrigo)));
         return abrigosDto;
     }
 
 
     @Transactional
-    public void cadastrar(AbrigoDto dto) {
+    public void cadastrar(CadastroAbrigoDto dto) {
         boolean nomeOuTelefoneOuEmailJaCadastrado = repository
                 .existsByNomeOrTelefoneOrNome(dto.nome(), dto.telefone(), dto.email());
 
         if (nomeOuTelefoneOuEmailJaCadastrado)
             throw new ValidacaoException("Dados já cadastrados para outro abrigo!");
 
-        var abrigo = new Abrigo(dto.id(), dto.nome(), dto.telefone(), dto.email());
+        var abrigo = new Abrigo(dto);
 
         repository.save(abrigo);
     }
@@ -56,11 +57,11 @@ public class AbrigoService {
     }
 
     @Transactional
-    public void cadastrarPet(String idOuNome, PetDto dto) {
+    public void cadastrarPet(String idOuNome, CadastroPetDto dto) {
         var abrigo = isParsableLong(idOuNome) ? repository.getReferenceById(Long.parseLong(idOuNome)) :
                 repository.findByNome(idOuNome);
 
-        var pet = new Pet(dto.tipo(), dto.nome(), dto.raca(), dto.idade(), dto.cor(), dto.peso(), abrigo);
+        var pet = new Pet(dto, abrigo);
         abrigo.getPets().add(pet);
         repository.save(abrigo);
     }
